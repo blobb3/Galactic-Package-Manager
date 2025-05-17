@@ -1,9 +1,10 @@
-package ch.zhaw.devops.gpm.galactic_pm;
+package ch.zhaw.devops.gpm.galactic_pm.controller;
 
-// import ch.zhaw.devops.gpm.galactic_pm.GalacticPackage;
-// import ch.zhaw.devops.gpm.galactic_pm.PackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import ch.zhaw.devops.gpm.galactic_pm.entity.GalacticPackage;
+import ch.zhaw.devops.gpm.galactic_pm.repository.PackageRepository;
 
 import java.util.List;
 import java.util.Optional;

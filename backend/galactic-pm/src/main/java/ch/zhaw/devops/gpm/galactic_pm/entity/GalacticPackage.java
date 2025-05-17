@@ -1,4 +1,4 @@
-package ch.zhaw.devops.gpm.galactic_pm;
+package ch.zhaw.devops.gpm.galactic_pm.entity;
 
 import java.util.Date;
 import jakarta.persistence.Entity;

@@ -1,8 +1,9 @@
 package ch.zhaw.devops.gpm.galactic_pm.config;
 
 
-import ch.zhaw.devops.gpm.galactic_pm.GalacticPackage;
-import ch.zhaw.devops.gpm.galactic_pm.PackageRepository;
+import ch.zhaw.devops.gpm.galactic_pm.entity.GalacticPackage;
+import ch.zhaw.devops.gpm.galactic_pm.repository.PackageRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,9 @@
-package ch.zhaw.devops.gpm.galactic_pm;
+package ch.zhaw.devops.gpm.galactic_pm.repository;
 
-// import ch.zhaw.devops.gpm.galactic_pm.GalacticPackage;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import ch.zhaw.devops.gpm.galactic_pm.entity.GalacticPackage;
+
 import java.util.List;
 
 public interface PackageRepository extends JpaRepository<GalacticPackage, Long> {
