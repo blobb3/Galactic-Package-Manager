@@ -132,100 +132,46 @@ Thumbs.db
 
 ## Backend implementieren
 
-### Schritt 1: Erstes Datenmodell erstellen
-
-
+### Schritt 1: Datenmodell erstellen
+Das Datenmodell `GalacticPackage.java` definiert die grundlegende Datenstruktur des Galactic Package Managers mit Feldern wie Name, Beschreibung, Autor, Version und Kompatibilität. Mit der `@Entity`-Annotation wird die Klasse als JPA-Entity markiert, was die automatische Persistierung in der Datenbank ermöglicht, während `@Id` und `@GeneratedValue` die Primärschlüsselverwaltung übernehmen.
 
 ### Schritt 2: Repository-Interface erstellen
-
+Das Interface `PackageRepository.java` erweitert `JpaRepository` und ermöglicht dadurch den Datenbankzugriff mit vorgefertigten CRUD-Operationen ohne eigene SQL-Implementierungen. Zusätzlich wurden spezifische Suchmethoden wie `findByNameContainingIgnoreCase()`, `findByCompatibility()` und `findByCategory()` deklariert, welche Spring Data JPA automatisch in entsprechende SQL-Abfragen übersetzt.
 
 ### Schritt 3: REST-Controller implementieren
-
-```java
-// src/main/java/com/gpm/controller/PackageController.java
-package com.gpm.controller;
-
-import com.gpm.model.GalacticPackage;
-import com.gpm.repository.PackageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-
-@RestController
-@RequestMapping("/api/packages")
-@CrossOrigin(origins = "*") // Für Entwicklungszwecke
-public class PackageController {
-
-    @Autowired
-    private PackageRepository packageRepository;
-
-    // Alle Pakete abrufen
-    @GetMapping
-    public List<GalacticPackage> getAllPackages() {
-        return packageRepository.findAll();
-    }
-
-    // Ein bestimmtes Paket abrufen
-    @GetMapping("/{id}")
-    public Optional<GalacticPackage> getPackageById(@PathVariable Long id) {
-        return packageRepository.findById(id);
-    }
-
-    // Nach Paketen suchen
-    @GetMapping("/search")
-    public List<GalacticPackage> searchPackages(@RequestParam String query) {
-        return packageRepository.findByNameContainingIgnoreCase(query);
-    }
-
-    // Pakete nach Kompatibilität filtern
-    @GetMapping("/compatibility/{faction}")
-    public List<GalacticPackage> getPackagesByCompatibility(@PathVariable String faction) {
-        return packageRepository.findByCompatibility(faction);
-    }
-
-    // Neues Paket erstellen
-    @PostMapping
-    public GalacticPackage createPackage(@RequestBody GalacticPackage galacticPackage) {
-        return packageRepository.save(galacticPackage);
-    }
-
-    // Paket aktualisieren
-    @PutMapping("/{id}")
-    public GalacticPackage updatePackage(@PathVariable Long id, @RequestBody GalacticPackage updatedPackage) {
-        // Prüfen, ob Paket existiert
-        packageRepository.findById(id).orElseThrow(() -> 
-            new RuntimeException("Package with id " + id + " not found"));
-        
-        updatedPackage.setId(id);
-        return packageRepository.save(updatedPackage);
-    }
-
-    // Paket löschen
-    @DeleteMapping("/{id}")
-    public void deletePackage(@PathVariable Long id) {
-        packageRepository.deleteById(id);
-    }
-}
-```
+Der `PackageController.java` bildet das "Herzstück" (wie jeder Controller) der API und stellt mit entsprechenden `@RequestMapping`-Annotationen die REST-Endpunkte für Frontend-Anfragen bereit. Über Methoden wie `getAllPackages()`, `getPackageById()`, `searchPackages()` und weitere CRUD-Operationen wird die komplette Kommunikation zwischen Frontend und Backend ermöglicht, wobei die `@CrossOrigin`-Annotation den Zugriff von verschiedenen Domains erlaubt.
 
 ### Schritt 4: Demo-Daten für Testbetrieb erstellen
-
-in config - Datainitializer
+Die `DataInitializer.java`-Klasse ist mit `@Component` annotiert und implementiert `CommandLineRunner`, wodurch sie beim Anwendungsstart automatisch ausgeführt wird. Sie befüllt die Datenbank mit fiktiven Star Wars-Packages wie "hyperspace-navigation" und "imperial-scanner", um die Funktionalität ohne manuelles Anlegen von Testdaten demonstrieren zu können.
 
 ### Schritt 5: Spring Boot-Anwendung starten
-
 ```bash
 ./gradlew bootRun
 ```
 
-Wenn alles funktioniert, sollte die Anwendung auf http://localhost:8080 starten und die REST-API verfügbar sein.
-Und das ist sie: 
+Beim Start der Anwendung auf http://localhost:8080 erscheint zunächst der klassische Whitelabel Error - aber dies ist ein gewollter Fehler, denn er zeigt an, dass der Server läuft und auf API-Anfragen wartet. Um tatsächliche Daten zu sehen, muss nun entweder ein API-Client wie Postman verwendet werden (z.B. GET auf `/api/packages`) oder das Frontend implementiert werden, das diese Endpunkte anspricht.
 
 <img src="images/Bild1.png" alt="DevOpsLogo" width="157" height="80">
 
-Unser erster Whitelabel-Error!
+### 6: Testen der API mit Postman
+
+Bevor wir mit der Frontend-Entwicklung beginnen, soll nun dennoch die Backend-API auf korrekte Funktionalität geprüft werden. Postman bietet hierfür eine ideale Testumgebung, da es die direkte Interaktion mit den API-Endpunkten ohne Frontend-Code ermöglicht. Die drei grundlegenden HTTP-Methoden wurden erfolgreich getestet:
+
+- **GET**: Abrufen aller Pakete und Überprüfung, ob die Demo-Daten korrekt initialisiert wurden
+
+<img src="images/Bild2.png" alt="DevOpsLogo" width="157" height="80">
+
+- **POST**: Erstellen eines neuen "force-calculations"-Pakets und Verifizierung der automatischen ID-Generierung
+
+<img src="images/Bild3.png" alt="DevOpsLogo" width="157" height="80">
+
+- **PUT**: Aktualisierung eines bestehenden Pakets mit verbesserten Eigenschaften, was die vollständige Datenpersistenz bestätigt
+  
+<img src="images/Bild4.png" alt="DevOpsLogo" width="157" height="80">
+
+Diese API-Tests bilden nun das Fundament für die Frontend-Entwicklung, da sie sicherstellen, dass die Datenmanipulation wie erwartet funktioniert. Das "Whitelabel Error"-Problem soll nun bald behoben werden..
+
+---
 
 ## Frontend entwickeln
 
