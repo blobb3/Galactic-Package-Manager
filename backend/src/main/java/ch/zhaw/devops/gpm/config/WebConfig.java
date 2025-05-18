@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+/*@Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
     @Override
@@ -18,5 +18,17 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
+    }
+}*/
+
+// In deiner Spring Boot-Anwendung
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
+        registry.addMapping("/api/**")
+            .allowedOrigins("https://dein-frontend-url.onrender.com")
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowCredentials(true);
     }
 }
