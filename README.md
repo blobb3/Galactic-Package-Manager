@@ -175,477 +175,120 @@ Diese API-Tests bilden nun das Fundament für die Frontend-Entwicklung, da sie s
 
 ## Frontend entwickeln
 
-### Schritt 1: Frontend-Verzeichnis einrichten
+### Frontend entwickeln
 
-wurde oben schon erleidgt
+### Schritt 1: Frontend-Verzeichnis einrichten
+Wurde bereits im vorherigen Abschnitt erledigt, wobei die grundlegende Ordnerstruktur und npm-Initialisierung durchgeführt wurden.
 
 ### Schritt 2: HTML-Grundstruktur erstellen
-Frontend in index.htlm erstellen
+Die `index.html` bildet das "Skelett der Anwendung" mit mehreren Hauptbereichen: einem Container für den Sternenhintergrund (`particles-js`), einem Header mit Logo und Suchfunktion, dem Hauptbereich für Paketlisten und -details sowie einem Spielbereich für die Installation. Die Struktur folgt einem Single-Page-Application-Ansatz, bei dem verschiedene Bereiche durch JavaScript ein- und ausgeblendet werden.
 
 ### Schritt 3: CSS für stilvolle Galaxis-Oberfläche
-
-css -style.css erstellen
+Das CSS in `style.css` implementiert ein Star Wars-inspiriertes Farbschema mit dunklen Hintergründen und kontrastierenden Akzentfarben. Besonders hervorzuheben sind die responsiven Kartenlayouts mit CSS Grid, die Animation von UI-Elementen und die fraktionsspezifischen Farbcodierungen (Republik, Imperium, Neutral). Das Design ist vollständig responsiv und passt sich verschiedenen Bildschirmgrössen an.
 
 ### Schritt 4: JavaScript-Dateien für Frontend-Logik erstellen
 
-1. Particles.js Konfiguration:
+1. **Particles.js Konfiguration:**
+   Die `particles-config.js` konfiguriert den animierten Sternenhintergrund mit interaktiven Partikeln, die auf Mausbewegungen reagieren. Die Parameter bestimmen unter anderem Grösse, Anzahl, Bewegungsmuster und Transparenz der "Sterne", was die räumliche Atmosphäre der Anwendung erzeugt.
 
-frontend/js/particles-config.js
+2. **API Service für Backend-Kommunikation:**
+   Die `ApiService`-Klasse kapselt alle HTTP-Requests zum Backend mit async/await-Funktionen. Sie implementiert die CRUD-Funktionalität und bietet Methoden wie `getAllPackages()`, `searchPackages()` und `getPackagesByCompatibility()`, wodurch der Rest der Anwendung von den Details der API-Kommunikation abstrahiert wird.
 
+3. **Package Renderer für UI-Updates:**
+   Der `PackageRenderer` ist für die dynamische Aktualisierung der UI-Elemente zuständig. Er rendert die Paketliste, zeigt Detailansichten an und orchestriert die Übergänge zwischen verschiedenen Ansichten mit Anime.js-Animationen. Diese Komponente dient als Controller im clientseitigen MVC-Muster.
 
-2. API Service für Backend-Kommunikation:
+4. **Mini-Spiel für die Paket-Installation:**
+   Die `InstallationGame`-Klasse implementiert ein interaktives Minispiel, bei dem der Benutzer auf auftauchende TIE-Fighter klicken muss, um den Installationsfortschritt zu beschleunigen. Die Spielmechanik verwendet Anime.js für flüssige Animationen und einen Fortschrittsbalken, der den Installationsstatus visualisiert.
 
-```javascript
-// frontend/js/api-service.js
-class ApiService {
-  
-```
-
-3. Package Renderer für UI-Updates:
-
-```javascript
-// frontend/js/package-renderer.js
-class PackageRenderer {
-    constructor(apiService) {
-        this.apiService = apiService;
-        this.packagesListElement = document.getElementById('packages-list');
-        this.packageDetailsElement = document.getElementById('package-details');
-        this.installationGameElement = document.getElementById('installation-game');
-        this.installationSuccessElement = document.getElementById('installation-success');
-        
-        // Package Details-Elemente
-        this.packageNameElement = document.getElementById('package-name');
-        this.packageAuthorElement = document.getElementById('package-author');
-        this.packageVersionElement = document.getElementById('package-version');
-        this.packageCategoryElement = document.getElementById('package-category');
-        this.packageCompatibilityElement = document.getElementById('package-compatibility');
-        this.packageDownloadsElement = document.getElementById('package-downloads');
-        this.packageDescriptionElement = document.getElementById('package-description');
-        
-        // Button-Event-Listener
-        document.getElementById('back-to-list').addEventListener('click', () => this.showPackagesList());
-        document.getElementById('install-package').addEventListener('click', () => this.startInstallation());
-        document.getElementById('cancel-installation').addEventListener('click', () => this.cancelInstallation());
-        document.getElementById('return-to-details').addEventListener('click', () => {
-            this.installationSuccessElement.classList.add('hidden');
-            this.packageDetailsElement.classList.remove('hidden');
-        });
-        
-        // Filter-Event-Listener
-        document.getElementById('compatibility-filter').addEventListener('change', (e) => {
-            this.filterByCompatibility(e.target.value);
-        });
-        
-        // Search-Event-Listener
-        document.getElementById('search-button').addEventListener('click', () => {
-            const query = document.getElementById('search-input').value;
-            this.searchPackages(query);
-        });
-        
-        document.getElementById('search-input').addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                const query = e.target.value;
-                this.searchPackages(query);
-            }
-        });
-    }
-    
-    async loadPackages() {
-        const packages = await this.apiService.getAllPackages();
-        this.renderPackagesList(packages);
-    }
-    
-    renderPackagesList(packages) {
-        this.packagesListElement.innerHTML = '';
-        
-        if (packages.length === 0) {
-            this.packagesListElement.innerHTML = '<p class="no-results">No packages found. Try a different search.</p>';
-            return;
-        }
-        
-        packages.forEach(pkg => {
-            const packageCard = document.createElement('div');
-            packageCard.className = 'package-card';
-            packageCard.dataset.id = pkg.id;
-            
-            packageCard.innerHTML = `
-                <h3>${pkg.name}</h3>
-                <p>${pkg.description.substring(0, 80)}${pkg.description.length > 80 ? '...' : ''}</p>
-                <p><strong>Author:</strong> ${pkg.author}</p>
-                <p><strong>Version:</strong> ${pkg.version}</p>
-                <span class="compatibility ${pkg.compatibility}">${pkg.compatibility}</span>
-            `;
-            
-            packageCard.addEventListener('click', () => this.showPackageDetails(pkg.id));
-            this.packagesListElement.appendChild(packageCard);
-        });
-    }
-    
-    async showPackageDetails(id) {
-        const pkg = await this.apiService.getPackageById(id);
-        if (!pkg) return;
-        
-        this.packageNameElement.textContent = pkg.name;
-        this.packageAuthorElement.textContent = pkg.author;
-        this.packageVersionElement.textContent = pkg.version;
-        this.packageCategoryElement.textContent = pkg.category;
-        this.packageCompatibilityElement.textContent = pkg.compatibility;
-        this.packageDownloadsElement.textContent = pkg.downloads.toLocaleString();
-        this.packageDescriptionElement.textContent = pkg.description;
-        
-        // Animation mit anime.js
-        this.packagesListElement.parentElement.classList.add('hidden');
-        this.packageDetailsElement.classList.remove('hidden');
-        
-        anime({
-            targets: this.packageDetailsElement,
-            opacity: [0, 1],
-            translateY: [20, 0],
-            easing: 'easeOutExpo',
-            duration: 800
-        });
-        
-        // Speichere aktuelle Paket-ID für die Installation
-        this.currentPackageId = id;
-    }
-    
-    showPackagesList() {
-        this.packageDetailsElement.classList.add('hidden');
-        this.packagesListElement.parentElement.classList.remove('hidden');
-        
-        anime({
-            targets: this.packagesListElement.parentElement,
-            opacity: [0, 1],
-            translateY: [20, 0],
-            easing: 'easeOutExpo',
-            duration: 800
-        });
-    }
-    
-    startInstallation() {
-        this.packageDetailsElement.classList.add('hidden');
-        this.installationGameElement.classList.remove('hidden');
-        
-        // Starte das Minispiel
-        if (window.installationGame) {
-            window.installationGame.startGame();
-        }
-    }
-    
-    cancelInstallation() {
-        if (window.installationGame) {
-            window.installationGame.stopGame();
-        }
-        
-        this.installationGameElement.classList.add('hidden');
-        this.packageDetailsElement.classList.remove('hidden');
-    }
-    
-    showInstallationSuccess(packageData) {
-        this.installationGameElement.classList.add('hidden');
-        this.installationSuccessElement.classList.remove('hidden');
-        
-        // Chart.js für die Paketstatistik
-        const ctx = document.getElementById('stats-chart').getContext('2d');
-        new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['Speed', 'Reliability', 'Security', 'Size', 'Compatibility'],
-                datasets: [{
-                    label: 'Package Stats',
-                    data: [
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100)
-                    ],
-                    backgroundColor: 'rgba(76, 159, 56, 0.2)',
-                    borderColor: 'rgba(76, 159, 56, 1)',
-                    pointBackgroundColor: 'rgba(76, 159, 56, 1)',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(76, 159, 56, 1)'
-                }]
-            },
-            options: {
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        pointLabels: {
-                            color: 'rgba(255, 255, 255, 0.8)'
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            backdropColor: 'transparent'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: 'rgba(255, 255, 255, 0.8)'
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    async searchPackages(query) {
-        if (!query.trim()) {
-            // Wenn die Suche leer ist, lade alle Pakete
-            await this.loadPackages();
-            return;
-        }
-        
-        const packages = await this.apiService.searchPackages(query);
-        this.renderPackagesList(packages);
-    }
-    
-    async filterByCompatibility(faction) {
-        if (!faction) {
-            // Wenn kein Filter ausgewählt ist, lade alle Pakete
-            await this.loadPackages();
-            return;
-        }
-        
-        const packages = await this.apiService.getPackagesByCompatibility(faction);
-        this.renderPackagesList(packages);
-    }
-}
-```
-
-4. Mini-Spiel für die Paket-Installation:
-
-```javascript
-// frontend/js/installation-game.js
-class InstallationGame {
-    constructor(packageRenderer) {
-        this.packageRenderer = packageRenderer;
-        this.gameArea = document.getElementById('game-area');
-        this.progressBar = document.getElementById('installation-progress');
-        this.progressPercentage = document.getElementById('progress-percentage');
-        this.progress = 0;
-        this.targetCount = 0;
-        this.clickedTargets = 0;
-        this.gameInterval = null;
-        this.targets = [];
-    }
-    
-    startGame() {
-        this.progress = 0;
-        this.targetCount = 0;
-        this.clickedTargets = 0;
-        this.targets = [];
-        this.updateProgress(0);
-        
-        // Lösche alle vorhandenen Ziele
-        while (this.gameArea.firstChild) {
-            this.gameArea.removeChild(this.gameArea.firstChild);
-        }
-        
-        // Starte das Spiel
-        this.gameInterval = setInterval(() => this.gameLoop(), 1000);
-    }
-    
-    stopGame() {
-        if (this.gameInterval) {
-            clearInterval(this.gameInterval);
-            this.gameInterval = null;
-        }
-        
-        // Lösche alle vorhandenen Ziele
-        this.targets.forEach(target => {
-            if (target.element && target.element.parentNode) {
-                target.element.parentNode.removeChild(target.element);
-            }
-        });
-        this.targets = [];
-    }
-    
-    gameLoop() {
-        // Spawn neues Ziel
-        this.spawnTarget();
-        
-        // Erhöhe die Installationsgeschwindigkeit mit der Zeit
-        this.progress += 2;
-        
-        // Beende das Spiel, wenn die Installation abgeschlossen ist
-        if (this.progress >= 100) {
-            this.completeInstallation();
-        }
-        
-        this.updateProgress(this.progress);
-    }
-    
-    spawnTarget() {
-        const target = document.createElement('div');
-        target.className = 'target';
-        
-        // Zufällige Position im Spielbereich
-        const maxX = this.gameArea.clientWidth - 40;
-        const maxY = this.gameArea.clientHeight - 40;
-        const posX = Math.floor(Math.random() * maxX);
-        const posY = Math.floor(Math.random() * maxY);
-        
-        target.style.left = `${posX}px`;
-        target.style.top = `${posY}px`;
-        
-        // Animation mit anime.js
-        target.style.opacity = '0';
-        this.gameArea.appendChild(target);
-        
-        anime({
-            targets: target,
-            opacity: [0, 1],
-            scale: [0.5, 1],
-            duration: 500,
-            easing: 'easeOutElastic(1, .8)'
-        });
-        
-        // Klick-Event
-        target.addEventListener('click', () => this.targetClicked(target));
-        
-        // Timer für Verschwinden
-        const targetObj = {
-            element: target,
-            timeout: setTimeout(() => {
-                if (target.parentNode) {
-                    anime({
-                        targets: target,
-                        opacity: 0,
-                        scale: 0.5,
-                        duration: 500,
-                        easing: 'easeInExpo',
-                        complete: () => {
-                            if (target.parentNode) {
-                                target.parentNode.removeChild(target);
-                            }
-                            this.targets = this.targets.filter(t => t.element !== target);
-                        }
-                    });
-                }
-            }, 3000)
-        };
-        
-        this.targets.push(targetObj);
-        this.targetCount++;
-    }
-    
-    targetClicked(target) {
-        if (target.clicked) return;
-        target.clicked = true;
-        
-        // Animation beim Klicken
-        anime({
-            targets: target,
-            opacity: 0,
-            scale: 1.5,
-            rotate: '1turn',
-            duration: 500,
-            easing: 'easeOutExpo',
-            complete: () => {
-                if (target.parentNode) {
-                    target.parentNode.removeChild(target);
-                }
-                this.targets = this.targets.filter(t => t.element !== target);
-            }
-        });
-        
-        // Boost für den Installationsfortschritt
-        this.progress += 5;
-        this.clickedTargets++;
-        this.updateProgress(this.progress);
-        
-        // Beende das Spiel, wenn die Installation abgeschlossen ist
-        if (this.progress >= 100) {
-            this.completeInstallation();
-        }
-    }
-    
-    updateProgress(value) {
-        // Begrenze den Wert auf maximal 100
-        value = Math.min(value, 100);
-        this.progressBar.style.width = `${value}%`;
-        this.progressPercentage.textContent = Math.floor(value);
-    }
-    
-    completeInstallation() {
-        this.stopGame();
-        
-        // Zeige Erfolgsseite mit Paketinformationen an
-        this.packageRenderer.showInstallationSuccess({
-            clickedTargets: this.clickedTargets,
-            totalTargets: this.targetCount
-        });
-    }
-}
-```
-
-5. Hauptdatei zum Initialisieren aller Komponenten:
-
-```javascript
-// frontend/js/main.js
-document.addEventListener('DOMContentLoaded', () => {
-    // API-Service initialisieren
-    const apiService = new ApiService();
-    
-    // Package-Renderer initialisieren
-    const packageRenderer = new PackageRenderer(apiService);
-    
-    // Installationsspiel initialisieren
-    window.installationGame = new InstallationGame(packageRenderer);
-    
-    // Pakete laden
-    packageRenderer.loadPackages();
-    
-    // Willkommensanimation mit anime.js
-    anime({
-        targets: '.logo-container',
-        translateY: ['-30px', '0px'],
-        opacity: [0, 1],
-        easing: 'easeOutExpo',
-        duration: 1500,
-        delay: 500
-    });
-    
-    anime({
-        targets: '.search-container, .filter-container',
-        translateY: ['20px', '0px'],
-        opacity: [0, 1],
-        easing: 'easeOutExpo',
-        duration: 1200,
-        delay: anime.stagger(200, {start: 1000})
-    });
-    
-    anime({
-        targets: '.packages-container',
-        translateY: ['50px', '0px'],
-        opacity: [0, 1],
-        easing: 'easeOutExpo',
-        duration: 1800,
-        delay: 1500
-    });
-});
-```
+5. **Hauptdatei für Komponenten-Initialisierung:**
+   Die `main.js` orchestriert das Zusammenspiel aller Komponenten, initialisiert die API-Verbindung und registriert Event-Listener. Zudem implementiert sie die anfängliche Willkommensanimation mit gestaffelten Effekten, die die Benutzererfahrung beim ersten Laden der Anwendung verbessern.
 
 ### Schritt 5: Frontend starten
-
-Da das Frontend einfach statische Dateien enthält, können wir es einfach mit einem lokalen Server starten:
+Die Frontend-Anwendung wird mit `npx serve` gestartet, wodurch ein lokaler Webserver auf Port 3000 die statischen Dateien bereitstellt. 
 
 ```bash
 cd frontend
 npx serve
 ```
 
-Die Anwendung sollte nun unter http://localhost:3000 verfügbar sein.
+> Die Anwendung ist nun unter http://localhost:3000 verfügbar, siehe:
+> 
+> <img src="images/Bild5.png" alt="DevOpsLogo" width="157" height="80">
+> 
+> Wenn man auf "Install Package" klickt, erscheint dann ein kleines Mini-Game:
+> 
+> <img src="images/Bild6.png" alt="DevOpsLogo" width="157" height="80">
+
+Für diese Lösung ist keine komplexe Server-Konfiguration erforderlich. Der Frontend-Client kommuniziert über AJAX-Aufrufe mit dem Backend auf Port 8080 und nutzt Cross-Origin-Resource-Sharing (CORS), das im Backend explizit erlaubt wurde.
+
+> Mit Frontend und Backend als separate Komponenten entwickelt, stehen wir nun vor der klassischen DevOps-Herausforderung: Die Integration beider Systeme zu einer funktionierenden Einheit.
+
+---
 
 ## Integration und Tests
+
+Nachdem beide Systeme unabhängig voneinander getestet wurden, ist es nun an der Zeit, die gesamte Anwendung als Einheit zu betrachten und sie einer Reihe integrierter Tests zu unterziehen – denn nur so kann sichergestellt werden, dass der Galactic Package Manager nicht an einem unerwarteten Fehler wie ein Todesstern an einer ungesicherten Belüftungsöffnung scheitert.
+
+## Automatisierte Tests
+
+Um eine hohe Codeabdeckung und langfristige Wartbarkeit des Galactic Package Managers zu gewährleisten, wurden verschiedene automatisierte Tests entwickelt. Diese testen die Anwendung auf verschiedenen Ebenen, von einzelnen Klassen bis hin zur Gesamtfunktionalität.
+
+### Schritt 1: Unit-Tests für die Entity-Klasse
+
+Die Datei `GalacticPackageTest.java` testet die Funktionalität der Entitätsklasse durch:
+- Überprüfung des Konstruktors und aller Getter-Methoden
+- Validierung der Setter-Methoden für die Aktualisierung von Objekteigenschaften
+- Sicherstellung, dass alle Felder korrekt initialisiert und abgerufen werden können
+
+Diese grundlegenden Tests stellen sicher, dass das Datenmodell wie erwartet funktioniert und bilden die Basis für alle weiteren Tests.
+
+### Schritt 2: Repository-Tests
+
+Die `PackageRepositoryTest.java` prüft, ob das Repository korrekt mit der Datenbank interagiert:
+- Test der benutzerdefinierten Suchmethode `findByNameContainingIgnoreCase()` mit Berücksichtigung der Gross-/Kleinschreibung
+- Validierung der Filtermethode `findByCompatibility()` für die verschiedenen Fraktionen
+- Überprüfung der Kategoriefiltermethode `findByCategory()`
+
+Diese Tests verwenden `@DataJpaTest` und einen `TestEntityManager`, um eine isolierte Datenbankumgebung zu schaffen, ohne die eigentliche Datenbank zu beeinflussen.
+
+### Schritt 3: Controller-Tests
+
+Der `PackageControllerTest.java` testet die API-Endpunkte durch simulierte HTTP-Anfragen:
+- GET-Anfragen zum Abrufen aller Pakete und einzelner Pakete nach ID
+- POST-Anfragen zum Erstellen neuer Pakete
+- PUT-Anfragen zum Aktualisieren bestehender Pakete
+- DELETE-Anfragen zum Entfernen von Paketen
+- Überprüfung der korrekten HTTP-Statuscodes und Antwortinhalte
+
+Durch den Einsatz von `@WebMvcTest` und MockMvc können HTTP-Anfragen simuliert werden, ohne einen tatsächlichen Server zu starten, was schnelle und zuverlässige Tests ermöglicht.
+
+### Schritt 4: DataInitializer-Tests
+
+Die `DataInitializerTest.java` verifiziert die korrekte Initialisierung der Demo-Daten:
+- Test, ob Demo-Pakete erstellt werden, wenn das Repository leer ist
+- Überprüfung, dass keine Pakete erstellt werden, wenn bereits Daten vorhanden sind
+
+Diese Tests stellen sicher, dass der Anwendungsstartprozess korrekt funktioniert und die Testdaten nur bei Bedarf erstellt werden.
+
+### Schritt 5: Integrationstests
+
+Die umfassendste Testdatei `GalacticPackageManagerIntegrationTest.java` testet das Zusammenspiel aller Komponenten:
+- Vollständige CRUD-Operationen über die tatsächliche REST-API
+- Suchfunktionalität mit realen HTTP-Anfragen
+- Filterfunktionen nach Kompatibilität
+- Ende-zu-Ende-Tests mit einem eingebetteten Server
+
+Im Gegensatz zu den Unit-Tests verwendet dieser Test `@SpringBootTest` mit `WebEnvironment.RANDOM_PORT`, um einen echten Server zu starten und eine reale Umgebung zu simulieren.
+
+### Ausführung der Tests
+
+Die Tests können mit Gradle ausgeführt werden:
+
+```bash
+./gradlew test
+```
+
+Nach der Ausführung wird ein Testbericht generiert, welcher die Codeabdeckung und eventuelle Fehler anzeigt. Eine hohe Testabdeckung ist entscheidend für die Qualitätssicherung und erleichtert zukünftige Änderungen und Erweiterungen.
 
 ### Beide Komponenten starten
 
@@ -667,6 +310,8 @@ Nun sollte die Anwendung funktionieren:
 - Frontend läuft auf http://localhost:3000
 - REST-API ist unter http://localhost:8080/api/packages erreichbar
 - Frontend kommuniziert mit dem Backend und zeigt die galaktischen Pakete an
+
+<img src="images/Bild7.png" alt="DevOpsLogo" width="157" height="80">
 
 ### Manuelles Testen der Hauptfunktionen
 
