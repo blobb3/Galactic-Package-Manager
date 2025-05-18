@@ -14,7 +14,8 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 6. [Integration und Tests](#integration-und-tests)
 7. [UI-Tests mit Selenium und Cypress](#ui-tests-mit-selenium-und-cypress)
 8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
-9. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
+9. [SonarQube-Analyse](#sonarqube-analyse)
+10. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
 
 ## Projektübersicht
 
@@ -493,7 +494,7 @@ Nun sollte die Anwendung funktionieren:
 
 ---
 
-## SonarQube-Analyse für den Galactic Package Manager
+## SonarQube-Analyse
 
 Um eine SonarQube-Analyse durchzuführen, sollte den nachfolgenden Schritten gefolgt werden:
 
@@ -518,33 +519,50 @@ SonarQube wird dann unter http://localhost:9000 verfügbar sein.
 7. Namen eingeben ("galactic-pm-token") und Ablaufzeit wählen (möglichst bis nach dem Semester)
 8. Das generierte Token kopieren - es wird nur einmal angezeigt!
 
+<img src="images/Bild11.png" alt="DevOpsLogo" width="157" height="80">
+
+<img src="images/Bild12.png" alt="DevOpsLogo" width="157" height="80">
+
+<img src="images/Bild14.png" alt="DevOpsLogo" width="157" height="80">
+
 ### 3. Gradle-Konfiguration für SonarQube
 
 Die `build.gradle`-Datei im `backend/galactic-pm`-Verzeichnis muss noch um ein sonarqube-Plugin ergänzt werden.
 
 ### 4. Analyse ausführen
 
-Navigiere zum `backend/galactic-pm`-Verzeichnis und führe den Befehl aus:
+Es muss zum `backend/galactic-pm`-Verzeichnis navigiert und den Befehl aus geführt werden:
 
 ```powershell
 # In PowerShell
-... Sonarqube dingens
+# Wenn die Backtick-Version Probleme bereitet, verwende diesen Einzeiler:
+.\gradlew.bat sonar "-Dsonar.projectKey=gpm-devops" "-Dsonar.projectName=gpm-devops" "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=sqp_003250248f56dfec956f4f9cf63a24409300c77c"
 ```
 
-Die Analyse wird ausgeführt und die Ergebnisse an deinen lokalen SonarQube-Server gesendet. Nach Abschluss kannst du die Ergebnisse im SonarQube-Dashboard unter http://localhost:9000 einsehen.
+Die Analyse des Backend-Codes wird damit ausgeführt und die Ergebnisse an den lokalen SonarQube-Server gesendet. Nach Abschluss kann man die Ergebnisse im SonarQube-Dashboard unter http://localhost:9000 einsehen.
 
-### 5. Ergebnisse auswerten
+### 5. SonarQube-Analyseergebnisse des Backends
 
-In SonarQube kannst du nun folgende Aspekte deines Codes analysieren:
-- Code-Qualität und -Struktur
-- Sicherheitslücken
-- Duplizierter Code
-- Testabdeckung (über die JaCoCo-Integration)
-- Code Smells und technische Schulden
+In SonarQube kannst du nun viele Aspekte des Codes analysieren.
 
-Das SonarQube-Dashboard bietet eine umfassende Übersicht und detaillierte Einblicke in potenzielle Verbesserungsmöglichkeiten für deinen Code.
+#### Codequalität und Metriken
 
-Falls du Probleme mit der Ausführung in PowerShell hast, versuche die CMD zu verwenden oder führe die Befehle über die Gradle-Integration in deiner IDE aus.
+Das Backend-Projekt "gpm-devops" hat beispielsweise den Quality Gate-Test bestanden, was auf eine grundsätzlich solide Codebasis hinweist. Diese erste Analyse zeigt gute Werte bei mehreren kritischen Metriken: eine beeindruckende Testabdeckung von 97,0% (189 von 283 Codezeilen) und 0,0% Codeduplikationen. Das Sicherheitsprofil erhält ein A-Rating mit 0 offenen Security-Issues, jedoch existiert 1 Security Hotspot (E-Rating), der untersucht werden sollte. Der Codebase umfasst 209 Zeilen in der Version 0.0.1-SNAPSHOT.
+
+<img src="images/Bild15.png" alt="DevOpsLogo" width="157" height="80">
+
+#### Identifizierte Problembereiche
+
+Trotz des bestandenen Quality Gates wurden 28 Issues identifiziert, welche behoben werden sollten. Der Schwerpunkt liegt auf Wartbarkeitsproblemen (26 Issues). Die häufigsten Probleme betreffen:
+- Dependency Injection: Field Injection sollte durch Constructor Injection ersetzt werden
+- Übermässige Parameterzahl: Ein Konstruktor verwendet mehr als 7 Parameter, was die Komplexität erhöht
+- Exception-Handling: Problematische Exception-Deklaration, die nicht aus der Methode geworfen werden kann
+- Modifier-Probleme: Unnötige public Modifier
+- Zuverlässigkeitsprobleme (C-Rating mit 2 Issues)
+
+<img src="images/Bild13.png" alt="DevOpsLogo" width="157" height="80">
+
+Diese technischen Schulden sollten - bei der Weiterführung des Projekts - wohl priorisiert angegangen werden, um die langfristige Wartbarkeit des Codes zu verbessern. Dennoch besteht das Projekt aktuell die Quality Gates!
 
 ---
 
