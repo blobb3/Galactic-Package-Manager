@@ -534,10 +534,10 @@ Die `build.gradle`-Datei im `backend/galactic-pm`-Verzeichnis muss noch um ein s
 Es muss zum `backend/galactic-pm`-Verzeichnis navigiert und den Befehl aus geführt werden:
 
 ```powershell
-# In PowerShell
-# Wenn die Backtick-Version Probleme bereitet, verwende diesen Einzeiler:
 .\gradlew.bat sonar "-Dsonar.projectKey=gpm-devops" "-Dsonar.projectName=gpm-devops" "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=sqp_003250248f56dfec956f4f9cf63a24409300c77c"
 ```
+
+>Ja, das Token sollte nicht hier stehen, aber leider ging es zu oft verloren :(.
 
 Die Analyse des Backend-Codes wird damit ausgeführt und die Ergebnisse an den lokalen SonarQube-Server gesendet. Nach Abschluss kann man die Ergebnisse im SonarQube-Dashboard unter http://localhost:9000 einsehen.
 
