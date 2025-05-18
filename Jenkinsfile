@@ -80,7 +80,7 @@ pipeline {
                     export DOCKER_HOST=tcp://host.docker.internal:2375
                     docker stop gpm-container || true
                     docker rm gpm-container || true
-                    docker run -d -p 3000:8081 --name gpm-container heinejan/galactic-pm:latest
+                    docker run -d -p 3000:8080 --name gpm-container heinejan/galactic-pm:latest
                     
                     # Warten auf Container-Start
                     echo "Warte auf Container-Start..."
