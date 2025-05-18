@@ -1,0 +1,306 @@
+:root {
+    --primary-color: #0b3d91;     /* NASA Blue */
+    --secondary-color: #fc3d21;   /* NASA Red */
+    --accent-color: #4c9f38;      /* Lightsaber Green */
+    --dark-bg: #0a0e17;           /* Space Black */
+    --light-text: #e1e1e1;        /* Star Light */
+    --card-bg: rgba(16, 23, 41, 0.8); /* Transparent Star Destroyer Gray */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    color: var(--light-text);
+    background-color: var(--dark-bg);
+    position: relative;
+    min-height: 100vh;
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+header {
+    background-color: rgba(11, 61, 145, 0.8);
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px rgba(252, 61, 33, 0.6);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.search-container {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+}
+
+.search-container input {
+    flex-grow: 1;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 1rem;
+}
+
+.search-container button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    padding: 0 1.2rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.search-container button:hover {
+    background-color: #e93315;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-container select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: var(--card-bg);
+    color: var(--light-text);
+    border: 1px solid #2a4580;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.packages-container {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.packages-container h2 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#packages-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.package-card {
+    background-color: rgba(22, 38, 73, 0.8);
+    border-radius: 6px;
+    padding: 1.2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border-left: 4px solid var(--primary-color);
+}
+
+.package-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.package-card h3 {
+    margin-bottom: 0.7rem;
+    color: white;
+}
+
+.package-card p {
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.package-card .compatibility {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.compatibility.Republic {
+    background-color: var(--accent-color);
+}
+
+.compatibility.Empire {
+    background-color: #c80815;
+}
+
+.compatibility.Neutral {
+    background-color: #7b7b7b;
+}
+
+.package-details {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.package-info {
+    margin: 1.5rem 0;
+}
+
+.package-info p {
+    margin-bottom: 0.8rem;
+}
+
+.package-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.package-actions button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#install-package {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#install-package:hover {
+    background-color: #3d8029;
+}
+
+#back-to-list {
+    background-color: #4a4a4a;
+    color: white;
+}
+
+#back-to-list:hover {
+    background-color: #333;
+}
+
+.installation-game, .installation-success {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.3);
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#game-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.target {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-image: url('../img/tie-fighter.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+#installation-progress {
+    height: 100%;
+    width: 0%;
+    background-color: var(--accent-color);
+    transition: width 0.3s;
+}
+
+#package-stats {
+    margin: 2rem auto;
+    max-width: 500px;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: rgba(10, 14, 23, 0.8);
+    margin-top: 3rem;
+}
+
+footer p {
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .filter-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #packages-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .package-actions {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Package Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Particles.js Container für Sternenhintergrund -->
+    <div id="particles-js"></div>
+    
+    <header>
+        <div class="logo-container">
+            <h1>Galactic Package Manager</h1>
+            <p class="subtitle">May the source be with you</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search for packages...">
+            <button id="search-button">Search</button>
+        </div>
+        
+        <div class="filter-container">
+            <select id="compatibility-filter">
+                <option value="">All Factions</option>
+                <option value="Republic">Republic</option>
+                <option value="Empire">Empire</option>
+                <option value="Neutral">Neutral</option>
+            </select>
+            
+            <select id="category-filter">
+                <option value="">All Categories</option>
+                <option value="Navigation">Navigation</option>
+                <option value="Communication">Communication</option>
+                <option value="Visual">Visual</option>
+                <option value="Security">Security</option>
+            </select>
+        </div>
+    </header>
+    
+    <main>
+        <section class="packages-container">
+            <h2>Available Packages</h2>
+            <div id="packages-list">
+                <!-- Packages will be loaded here dynamically -->
+            </div>
+        </section>
+        
+        <section class="package-details hidden" id="package-details">
+            <h2 id="package-name"></h2>
+            <div class="package-info">
+                <p><strong>Author:</strong> <span id="package-author"></span></p>
+                <p><strong>Version:</strong> <span id="package-version"></span></p>
+                <p><strong>Category:</strong> <span id="package-category"></span></p>
+                <p><strong>Compatibility:</strong> <span id="package-compatibility"></span></p>
+                <p><strong>Downloads:</strong> <span id="package-downloads"></span></p>
+                <p><strong>Description:</strong> <span id="package-description"></span></p>
+            </div>
+            <div class="package-actions">
+                <button id="install-package">Install Package</button>
+                <button id="back-to-list">Back to List</button>
+            </div>
+        </section>
+        
+        <!-- Mini-Game für die Paket-Installation -->
+        <section class="installation-game hidden" id="installation-game">
+            <h2>Package Installation</h2>
+            <p>Click on the appearing rebel ships to protect your data transfer!</p>
+            <div class="game-container">
+                <div id="game-area"></div>
+                <div class="progress-bar">
+                    <div id="installation-progress"></div>
+                </div>
+            </div>
+            <p>Installation Progress: <span id="progress-percentage">0</span>%</p>
+            <button id="cancel-installation">Cancel</button>
+        </section>
+        
+        <!-- Erfolgsanzeige nach Installation -->
+        <section class="installation-success hidden" id="installation-success">
+            <h2>Installation Complete!</h2>
+            <p>The package has been successfully installed.</p>
+            <div id="package-stats">
+                <canvas id="stats-chart"></canvas>
+            </div>
+            <button id="return-to-details">Return to Package Details</button>
+        </section>
+    </main>
+    
+    <footer>
+        <p>© 2025 Galactic Package Manager - For educational purposes only</p>
+        <p>Not affiliated with the Jedi Council or the Galactic Empire</p>
+    </footer>
+
+    <!-- JavaScript-Bibliotheken -->
+    <script src="node_modules/particles.js/particles.js"></script>
+    <script src="node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Eigene JavaScript-Dateien -->
+    <script src="js/particles-config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/package-renderer.js"></script>
+    <script src="js/installation-game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
