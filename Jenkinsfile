@@ -27,6 +27,28 @@ pipeline {
                 '''
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan-DevOps', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''
+                        set -x  # Debug-Modus aktivieren
+                        export DOCKER_HOST=tcp://host.docker.internal:2375
+                        
+                        echo "Anmelden bei Docker Hub..."
+                        echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                        
+                        echo "Lokale Images auflisten..."
+                        docker images | grep galactic-pm
+                        
+                        echo "Pushe Image zu Docker Hub..."
+                        docker push heinejan/galactic-pm:latest
+                        
+                        echo "Docker Hub Push abgeschlossen."
+                    '''
+                }
+            }
+        }
         
         stage('Local Deploy') {
             steps {
