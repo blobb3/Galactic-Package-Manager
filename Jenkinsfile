@@ -19,68 +19,50 @@ pipeline {
             }
         }
         
-        stage('Docker Build') {
+        stage('Frontend Build') {
             steps {
-                sh '''
-                    export DOCKER_HOST=tcp://host.docker.internal:2375
-                    docker build -t heinejan/galactic-pm:latest .
-                '''
+                dir('frontend') {
+                    sh '''
+                        export DOCKER_HOST=tcp://host.docker.internal:2375
+                        echo "Building frontend Docker image..."
+                        docker build -t heinejan/galactic-pm-frontend:latest .
+                    '''
+                }
             }
         }
 
-        stage('Docker Push') {
+        stage('Docker Push Frontend') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan-DevOps', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
-                        # Debug-Ausgaben aktivieren
-                        set -xe
-                        
                         export DOCKER_HOST=tcp://host.docker.internal:2375
-                        
-                        # Docker-Version anzeigen
-                        docker --version
-                        
-                        # Vorhandene Images anzeigen
-                        echo "Vorhandene Images:"
-                        docker images
-                        
-                        # Explizit neu taggen (manchmal hilft das)
-                        echo "Tagge Image neu..."
-                        docker tag $(docker images -q heinejan/galactic-pm:latest) heinejan/galactic-pm:latest || echo "Tagging fehlgeschlagen, fahre fort..."
                         
                         # Bei Docker Hub anmelden
                         echo "Melde bei Docker Hub an..."
                         echo $PASSWORD | docker login -u $USERNAME --password-stdin
                         
-                        # Status nach Login prüfen
-                        if [ $? -ne 0 ]; then
-                            echo "Docker Login fehlgeschlagen!"
-                            exit 1
-                        fi
-                        
-                        # Image pushen mit ausführlichen Informationen
-                        echo "Pushe Image zu Docker Hub..."
-                        docker push heinejan/galactic-pm:latest
-                        
-                        # Status nach Push prüfen
-                        if [ $? -ne 0 ]; then
-                            echo "Docker Push fehlgeschlagen!"
-                            exit 1
-                        fi
-                        
-                        echo "Docker Hub Push abgeschlossen."
+                        # Frontend-Image pushen
+                        echo "Pushe Frontend-Image zu Docker Hub..."
+                        docker push heinejan/galactic-pm-frontend:latest
                     '''
                 }
             }
         }
         
-        stage('Local Deploy') {
+        stage('Local Deploy for Testing') {
             steps {
                 sh '''
                     export DOCKER_HOST=tcp://host.docker.internal:2375
-                    docker stop gpm-container || true
-                    docker rm gpm-container || true
-                    docker run -d -p 3000:8080 --name gpm-container heinejan/galactic-pm:latest
+                    
+                    # Bestehende Container stoppen und entfernen
+                    docker stop gpm-backend gpm-frontend || true
+                    docker rm gpm-backend gpm-frontend || true
+                    
+                    # Backend für lokales Testing starten (nur in Jenkins)
+                    docker run -d -p 8080:8080 --name gpm-backend heinejan/galactic-pm:latest
+                    
+                    # Frontend starten (das ist, was auf Render deployt wird)
+                    docker run -d -p 3000:3000 --name gpm-frontend heinejan/galactic-pm-frontend:latest
                     
                     # Warten auf Container-Start
                     echo "Warte auf Container-Start..."
@@ -94,7 +76,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'RenderDeployKey2', variable: 'KEY')]) {
                         sh '''
-                            echo "Starte Deployment auf Render.com..."
+                            echo "Starte Frontend-Deployment auf Render.com..."
                             curl -X GET "https://api.render.com/deploy/${KEY}"
                             echo "Render.com Deployment wurde ausgelöst."
                         '''
