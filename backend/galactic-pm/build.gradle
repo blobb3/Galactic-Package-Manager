@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.11'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'ch.zhaw.devops.gpm'
@@ -17,6 +18,38 @@ repositories {
 	mavenCentral()
 }
 
+// JaCoCo-Konfiguration
+jacoco {
+    toolVersion = "0.8.11" // Aktuelle JaCoCo-Version
+}
+// Test-Task mit JaCoCo-Agent konfigurieren
+test {
+    finalizedBy jacocoTestReport // Bericht nach Tests generieren
+    jacoco {
+        destinationFile = file("${buildDir}/jacoco/test.exec")
+        includes = ['ch.zhaw.devops.gpm.*'] // Nur eigenen Code analysieren
+    }
+}
+
+// JaCoCo-Berichtseinstellungen
+jacocoTestReport {
+    reports {
+        xml.required = true // XML-Bericht für CI-Tools
+        html.required = true // HTML-Bericht für visuelle Inspektion
+    }
+    dependsOn test // Tests ausführen, bevor Bericht generiert wird
+}
+
+// Überprüfung der Testabdeckung
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80 // 80% Mindestabdeckung
+            }
+        }
+    }
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
