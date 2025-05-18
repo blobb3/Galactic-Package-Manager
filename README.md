@@ -14,6 +14,7 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 6. [Integration und Tests](#integration-und-tests)
 7. [UI-Tests mit Selenium und Cypress](#ui-tests-mit-selenium-und-cypress)
 8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
+9. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container:-vom-dev-zum-ops-system)
 
 ## Projektübersicht
 
@@ -545,8 +546,27 @@ Das SonarQube-Dashboard bietet eine umfassende Übersicht und detaillierte Einbl
 
 Falls du Probleme mit der Ausführung in PowerShell hast, versuche die CMD zu verwenden oder führe die Befehle über die Gradle-Integration in deiner IDE aus.
 
+---
+
+## Die Macht der Container: Vom Dev- zum Ops-System
+
+> *Die Entwicklungsphase ist abgeschlossen. Die Tests sind bestanden. Doch in einer Galaxie weit, weit entfernt wartet die wahre Herausforderung: das Deployment. Während unsere Helden den Dev-Hyperraum verlassen, steuern sie nun auf das Ops-System zu, wo Docker-Container und Jenkins-Pipelines darauf warten, die Macht der kontinuierlichen Integration zu entfesseln...*
+
+Nachdem der Galactic Package Manager entwickelt und mit verschiedenen Test-Strategien abgesichert wurde, ist es an der Zeit, den Sprung ins Ops-Universum zu wagen. 
+
+Als nächstes werdn die nachfolgenden Punkte angegangen:
+
+1. **Docker-Container bauen** - Anwendung in leichtgewichtige, portable Container verpacken, damit sie überall identisch läuft ("It works on my machine" war noch nie ein gültiger Statuscode)
+
+2. **Jenkins-Pipelines einrichten** - Automatisierte Builds aufsetzen, damit Code-Änderungen durch die Qualitätssicherung rasen
+
+3. **Multi-Stage-Deployment implementieren** - Von der Entwicklungsumgebung über Staging bis zur Produktion - ohne dass ein Qualitätsproblem durchschlüpft
+
+*"Es gibt keinen Versuch, nur Deployment"* - Master Yoda, wahrscheinlich
 
 ---
+
+## 
 
 Mit diesem Projekt wurde eine Full-Stack-Anwendung erstellt, welche als Basis für weitere DevOps-Übungen dienen kann. Es soll eine gute Lernumgebung geboten werden, um die verschiedenen Aspekte des DevOps-Zyklus zu verstehen und zu implementieren.
 
