@@ -12,7 +12,7 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 4. [Backend implementieren](#backend-implementieren)
 5. [Frontend entwickeln](#frontend-entwickeln)
 6. [Integration und Tests](#integration-und-tests)
-7. [UI-Tests mit Selenium und Cypress](ui-tests-mit-selenium-und-cypress)
+7. [UI-Tests mit Selenium und Cypress](#ui-tests-mit-selenium-und-cypress)
 8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
 
 ## Projektübersicht
