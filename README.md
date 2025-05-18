@@ -495,28 +495,28 @@ Nun sollte die Anwendung funktionieren:
 
 ## SonarQube-Analyse für den Galactic Package Manager
 
-Um eine SonarQube-Analyse durchzuführen, folge diesen Schritten:
+Um eine SonarQube-Analyse durchzuführen, sollte den nachfolgenden Schritten gefolgt werden:
 
 ### 1. SonarQube über Docker starten
 
 Wenn Docker Desktop bereits installiert ist, kann SonarQube mit folgendem Befehl gestartet werden:
 
 ```powershell
-docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
+docker start sonarqube
 ```
 
 SonarQube wird dann unter http://localhost:9000 verfügbar sein.
 
 ### 2. SonarQube-Token erstellen
 
-1. Navigiere zu http://localhost:9000 im Browser
-2. Melde dich an mit dem Standardzugang (admin/admin)
-3. Ändere das Passwort, falls du dazu aufgefordert wirst
-4. Gehe zu Administration > Security > Users
-5. Klicke auf deinen Admin-Benutzer
-6. Wähle "Tokens" und klicke auf "Generate"
-7. Gib einen Namen ein ("galactic-pm-token") und wähle eine Ablaufzeit (möglichst bis nach dem Semester)
-8. Kopiere das generierte Token - es wird nur einmal angezeigt!
+1. Zum http://localhost:9000 im Browser navigieren
+2. Mit dem Standardzugang (admin/admin) anmelden
+3. Passwort ändern, falls dazu aufgefordert 
+4. Administration > Security > Users
+5. Auf den Admin-Benutzer klicken
+6. "Tokens" anwählen und auf "Generate" klicken
+7. Namen eingeben ("galactic-pm-token") und Ablaufzeit wählen (möglichst bis nach dem Semester)
+8. Das generierte Token kopieren - es wird nur einmal angezeigt!
 
 ### 3. Gradle-Konfiguration für SonarQube
 
