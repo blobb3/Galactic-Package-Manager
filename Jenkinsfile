@@ -1,66 +1,61 @@
 pipeline {
     agent any
-   
-    tools {
-        gradle 'Gradle'
-        nodejs 'NodeJS 21.11.0'
-    }
-   
+    
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'GitHub-blobb3-Token', url: 'https://github.com/blobb3/Galactic-Package-Manager']])
             }
         }
-       
+        
         stage('Backend Build & Test') {
             steps {
                 dir('backend') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew clean test build'
                 }
+                junit stdioRetention: '', testResults: '**/test-results/test/*.xml'
+                jacoco()
             }
         }
-       
+        
         stage('Docker Build') {
             steps {
                 sh '''
-                export DOCKER_HOST=tcp://host.docker.internal:2375
-                docker build -t heinejan/galactic-pm:latest .
+                    export DOCKER_HOST=tcp://host.docker.internal:2375
+                    docker build -t heinejan/galactic-pm:latest .
                 '''
             }
         }
         
-        stage('Deploy Local') {
+        stage('Local Deploy') {
             steps {
                 sh '''
-                export DOCKER_HOST=tcp://host.docker.internal:2375
-                docker stop gpm-container || true
-                docker rm gpm-container || true
-                docker run -d -p 3001:3000 -p 8080:8080 --name gpm-container heinejan/galactic-pm:latest
-                
-                # Auf Container-Start warten
-                echo "Warte auf Container-Start..."
-                sleep 10
+                    export DOCKER_HOST=tcp://host.docker.internal:2375
+                    docker stop gpm-container || true
+                    docker rm gpm-container || true
+                    docker run -d -p 3001:3000 -p 8080:8080 --name gpm-container heinejan/galactic-pm:latest
+                    
+                    # Warten auf Container-Start
+                    echo "Warte auf Container-Start..."
+                    sleep 10
                 '''
             }
         }
         
         stage('Docker Push') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh '''
+                withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan-DevOps', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''
                         export DOCKER_HOST=tcp://host.docker.internal:2375
                         echo $PASSWORD | docker login -u $USERNAME --password-stdin
                         docker push heinejan/galactic-pm:latest
-                        '''
-                    }
+                    '''
                 }
             }
         }
     }
-   
+    
     post {
         always {
             sh 'export DOCKER_HOST=tcp://host.docker.internal:2375; docker logout'
