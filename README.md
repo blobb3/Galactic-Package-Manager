@@ -15,8 +15,8 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 7. [UI-Tests mit Selenium und Cypress](#ui-tests-mit-selenium-und-cypress)
 8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
 9. [SonarQube-Analyse](#sonarqube-analyse)
-10. [Continuous Integration mit Jenkins](#continuous-integration-mit-jenkins)
-11. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
+10. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
+11. [Continuous Integration mit Jenkins](#continuous-integration-mit-jenkins)
 
 ## Projektübersicht
 
