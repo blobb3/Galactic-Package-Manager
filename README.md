@@ -434,8 +434,8 @@ dir
 
 Nach der Ausführung der Tests mit JaCoCo wird ein detaillierter Bericht erstellt:
 
-1. **HTML-Bericht**: Der visuelle Bericht ist unter `backend/galactic-pm/build/reports/jacoco/test/html/index.html` verfügbar
-2. **XML-Bericht**: Für CI/CD-Tools wird ein XML-Bericht unter `backend/galactic-pm/build/reports/jacoco/test/jacocoTestReport.xml` generiert
+1. **HTML-Bericht**: Der visuelle Bericht ist unter `backend/build/reports/jacoco/test/html/index.html` verfügbar
+2. **XML-Bericht**: Für CI/CD-Tools wird ein XML-Bericht unter `backend/build/reports/jacoco/test/jacocoTestReport.xml` generiert
 
 Der HTML-Bericht bietet eine interaktive Oberfläche, mit der die Testabdeckung auf verschiedenen Ebenen analysiert werden kann:
 - Paketübersicht mit Gesamtabdeckung

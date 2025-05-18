@@ -1,4 +1,4 @@
-// cypress/e2e/galactic-pm.cy.js
+// cypress/e2e.cy.js
 describe('Galactic Package Manager Tests', () => {
     beforeEach(() => {
       // Vor jedem Test die Anwendung öffnen
