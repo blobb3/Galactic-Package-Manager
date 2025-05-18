@@ -73,6 +73,6 @@ public class DataInitializer implements CommandLineRunner {
         impScanner.setReleaseDate(new Date());
         packageRepository.save(impScanner);
 
-        // Weitere Pakete nach Bedarf hinzufügen...
+       
     }
 }

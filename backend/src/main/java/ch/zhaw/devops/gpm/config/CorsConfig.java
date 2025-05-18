@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/*@Configuration
+@Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
     @Override
@@ -19,9 +19,9 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-}*/
+}
 
-// In deiner Spring Boot-Anwendung
+/*  In deiner Spring Boot-Anwendung
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Override
@@ -31,4 +31,4 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true);
     }
-}
+}*/
