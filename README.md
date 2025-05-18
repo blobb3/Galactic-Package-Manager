@@ -227,6 +227,69 @@ Für diese Lösung ist keine komplexe Server-Konfiguration erforderlich. Der Fro
 
 ## Integration und Tests
 
+Nachdem beide Systeme unabhängig voneinander getestet wurden, ist es nun an der Zeit, die gesamte Anwendung als Einheit zu betrachten und sie einer Reihe integrierter Tests zu unterziehen – denn nur so kann sichergestellt werden, dass der Galactic Package Manager nicht an einem unerwarteten Fehler wie ein Todesstern an einer ungesicherten Belüftungsöffnung scheitert.
+
+## Automatisierte Tests
+
+Um eine hohe Codeabdeckung und langfristige Wartbarkeit des Galactic Package Managers zu gewährleisten, wurden verschiedene automatisierte Tests entwickelt. Diese testen die Anwendung auf verschiedenen Ebenen, von einzelnen Klassen bis hin zur Gesamtfunktionalität.
+
+### Schritt 1: Unit-Tests für die Entity-Klasse
+
+Die Datei `GalacticPackageTest.java` testet die Funktionalität der Entitätsklasse durch:
+- Überprüfung des Konstruktors und aller Getter-Methoden
+- Validierung der Setter-Methoden für die Aktualisierung von Objekteigenschaften
+- Sicherstellung, dass alle Felder korrekt initialisiert und abgerufen werden können
+
+Diese grundlegenden Tests stellen sicher, dass das Datenmodell wie erwartet funktioniert und bilden die Basis für alle weiteren Tests.
+
+### Schritt 2: Repository-Tests
+
+Die `PackageRepositoryTest.java` prüft, ob das Repository korrekt mit der Datenbank interagiert:
+- Test der benutzerdefinierten Suchmethode `findByNameContainingIgnoreCase()` mit Berücksichtigung der Gross-/Kleinschreibung
+- Validierung der Filtermethode `findByCompatibility()` für die verschiedenen Fraktionen
+- Überprüfung der Kategoriefiltermethode `findByCategory()`
+
+Diese Tests verwenden `@DataJpaTest` und einen `TestEntityManager`, um eine isolierte Datenbankumgebung zu schaffen, ohne die eigentliche Datenbank zu beeinflussen.
+
+### Schritt 3: Controller-Tests
+
+Der `PackageControllerTest.java` testet die API-Endpunkte durch simulierte HTTP-Anfragen:
+- GET-Anfragen zum Abrufen aller Pakete und einzelner Pakete nach ID
+- POST-Anfragen zum Erstellen neuer Pakete
+- PUT-Anfragen zum Aktualisieren bestehender Pakete
+- DELETE-Anfragen zum Entfernen von Paketen
+- Überprüfung der korrekten HTTP-Statuscodes und Antwortinhalte
+
+Durch den Einsatz von `@WebMvcTest` und MockMvc können HTTP-Anfragen simuliert werden, ohne einen tatsächlichen Server zu starten, was schnelle und zuverlässige Tests ermöglicht.
+
+### Schritt 4: DataInitializer-Tests
+
+Die `DataInitializerTest.java` verifiziert die korrekte Initialisierung der Demo-Daten:
+- Test, ob Demo-Pakete erstellt werden, wenn das Repository leer ist
+- Überprüfung, dass keine Pakete erstellt werden, wenn bereits Daten vorhanden sind
+
+Diese Tests stellen sicher, dass der Anwendungsstartprozess korrekt funktioniert und die Testdaten nur bei Bedarf erstellt werden.
+
+### Schritt 5: Integrationstests
+
+Die umfassendste Testdatei `GalacticPackageManagerIntegrationTest.java` testet das Zusammenspiel aller Komponenten:
+- Vollständige CRUD-Operationen über die tatsächliche REST-API
+- Suchfunktionalität mit realen HTTP-Anfragen
+- Filterfunktionen nach Kompatibilität
+- Ende-zu-Ende-Tests mit einem eingebetteten Server
+
+Im Gegensatz zu den Unit-Tests verwendet dieser Test `@SpringBootTest` mit `WebEnvironment.RANDOM_PORT`, um einen echten Server zu starten und eine reale Umgebung zu simulieren.
+
+### Ausführung der Tests
+
+Die Tests können mit Gradle ausgeführt werden:
+
+```bash
+./gradlew test
+```
+
+Nach der Ausführung wird ein Testbericht generiert, welcher die Codeabdeckung und eventuelle Fehler anzeigt. Eine hohe Testabdeckung ist entscheidend für die Qualitätssicherung und erleichtert zukünftige Änderungen und Erweiterungen.
+
 ### Beide Komponenten starten
 
 Um die vollständige Anwendung zu testen, müssen sowohl Backend als auch Frontend gestartet werden:
