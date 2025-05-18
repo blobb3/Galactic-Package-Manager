@@ -12,7 +12,7 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 4. [Backend implementieren](#backend-implementieren)
 5. [Frontend entwickeln](#frontend-entwickeln)
 6. [Integration und Tests](#integration-und-tests)
-7. [Erweiterungsmöglichkeiten](#erweiterungsmöglichkeiten)
+7. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
 
 ## Projektübersicht
 
@@ -287,8 +287,70 @@ Die Tests können mit Gradle ausgeführt werden:
 ```bash
 ./gradlew test
 ```
+Natürlich klappt nicht immer alles wie geplant:
+
+<img src="images/Bild8.png" alt="DevOpsLogo" width="157" height="80">
+
+Die Problematik konnte dann aber behoben werden: 
+
+<img src="images/Bild9.png" alt="DevOpsLogo" width="157" height="80">
 
 Nach der Ausführung wird ein Testbericht generiert, welcher die Codeabdeckung und eventuelle Fehler anzeigt. Eine hohe Testabdeckung ist entscheidend für die Qualitätssicherung und erleichtert zukünftige Änderungen und Erweiterungen.
+
+## JaCoCo-Testabdeckungsbericht
+
+### Schritt 1: JaCoCo in Gradle konfigurieren
+
+Um die Testabdeckung des Projekts zu messen und zu visualisieren, wurde JaCoCo (Java Code Coverage) integriert. Die Konfiguration dazu erfolgt in der `build.gradle`-Datei.
+
+### Schritt 2: JaCoCo-Berichte generieren
+
+Nach dem Hinzufügen der JaCoCo-Konfiguration können Testabdeckungsberichte wie folgt generiert werden:
+
+```bash
+# Zuerst in das Unterverzeichnis wechseln
+cd galactic-pm
+
+# Dann überprüfen, ob gradlew.bat dort ist (denkfehler)
+dir
+
+# Wenn gradlew.bat vorhanden ist, dann den Befehl ausführen
+.\gradlew.bat test jacocoTestReport
+
+# Optional: Überprüft, ob die Testabdeckung die Mindestanforderungen erfüllt
+.\gradlew jacocoTestCoverageVerification
+```
+
+### Schritt 3: Testabdeckungsberichte anzeigen
+
+Nach der Ausführung der Tests mit JaCoCo wird ein detaillierter Bericht erstellt:
+
+1. **HTML-Bericht**: Der visuelle Bericht ist unter `backend/galactic-pm/build/reports/jacoco/test/html/index.html` verfügbar
+2. **XML-Bericht**: Für CI/CD-Tools wird ein XML-Bericht unter `backend/galactic-pm/build/reports/jacoco/test/jacocoTestReport.xml` generiert
+
+Der HTML-Bericht bietet eine interaktive Oberfläche, mit der die Testabdeckung auf verschiedenen Ebenen analysiert werden kann:
+- Paketübersicht mit Gesamtabdeckung
+- Klassenübersicht innerhalb jedes Pakets
+- Detaillierte Codeansicht mit farbiger Markierung der getesteten/nicht getesteten Zeilen
+
+### Schritt 4: Interpretation der Ergebnisse
+
+Der JaCoCo-Bericht zeigt verschiedene Metriken zur Codeabdeckung:
+
+- **Instructions**: Anzahl der ausgeführten Java-Bytecode-Anweisungen
+- **Branches**: Prozentsatz der ausgeführten Verzweigungen (if/else, switch)
+- **Cyclomatic Complexity**: Abdeckung der Codekomplexität
+- **Lines**: Prozentsatz der ausgeführten Codezeilen
+- **Methods**: Prozentsatz der getesteten Methoden
+- **Classes**: Prozentsatz der getesteten Klassen
+
+Für den Galactic Package Manager wurde eine Zielabdeckung von mindestens 80% für alle Metriken festgelegt, um eine robuste Codebasis zu gewährleisten.
+
+<img src="images/Bild10.png" alt="DevOpsLogo" width="157" height="80">
+
+Der JaCoCo-Testabdeckungsbericht zeigt eine gute Gesamtabdeckung des Projekts mit 96% Instruction Coverage und 100% Class Coverage, was auf eine robuste Testsuite hinweist. Die Package-Analyse offenbart Unterschiede in der Testqualität, wobei das Basis-Package "galactic_pm" mit nur 37% Instruction Coverage deutliches Verbesserungspotential aufweist, während "config" und "entity" mit 100% vollständig abgedeckt sind. Die Controller-Komponente erreicht solide 89% Instruction Coverage, sollte aber noch optimiert werden, um die verbleibenden 11% abzudecken und damit die Zuverlässigkeit der API-Endpunkte weiter zu erhöhen.
+
+> Die regelmässige Überprüfung der Testabdeckung hilft dabei, potenzielle Lücken in der Testabdeckung zu identifizieren und zu schliessen, bevor sie zu Problemen in der Produktion führen können.
 
 ### Beide Komponenten starten
 
@@ -321,36 +383,9 @@ Nun sollte die Anwendung funktionieren:
 4. **Kompatibilitätsfilter:** Das Dropdown-Menü sollte Pakete nach Fraktion filtern
 5. **Installation mit Mini-Spiel:** Das Klick-Spiel sollte funktionieren und zur Erfolgsseite führen
 
-## Erweiterungsmöglichkeiten
-
-Dieses Basis-Projekt kann weiter ausgebaut werden, um DevOps-Praktiken zu vertiefen:
-
-1. **Unit-Tests hinzufügen**
-   - Backend-Tests mit JUnit für Controller und Repositories
-   - Frontend-Tests mit Jest
-
-2. **Docker-Container erstellen**
-   - Dockerfile für Backend
-   - Dockerfile für Frontend
-   - Docker Compose für die Orchestrierung
-
-3. **CI/CD mit Jenkins einrichten**
-   - Build-Pipeline erstellen
-   - Automatische Tests integrieren
-   - Deployment-Automatisierung
-
-4. **Weitere Backend-Features**
-   - Benutzerauthentifizierung
-   - Persistenz mit einer Datenbank (z.B. PostgreSQL)
-   - Erweiterte Such- und Filterfunktionen
-
-5. **Frontend-Verbesserungen**
-   - Bewertungssystem für Pakete
-   - Responsive Design optimieren
-   - Fortgeschrittenere Visualisierungen
 
 ---
 
-Mit diesem Projekt wurde eine funktionierende Full-Stack-Anwendung erstellt, die als Basis für weitere DevOps-Übungen dienen kann. Die Kombination aus Spring Boot und JavaScript-Bibliotheken bietet eine gute Lernumgebung, um die verschiedenen Aspekte des DevOps-Zyklus zu verstehen und zu implementieren.
+Mit diesem Projekt wurde eine Full-Stack-Anwendung erstellt, welche als Basis für weitere DevOps-Übungen dienen kann. Es soll eine gute Lernumgebung geboten werden, um die verschiedenen Aspekte des DevOps-Zyklus zu verstehen und zu implementieren.
 
 **Möge der Quellcode mit dir sein!** 🌌
