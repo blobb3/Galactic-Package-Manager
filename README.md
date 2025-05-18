@@ -15,7 +15,8 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 7. [UI-Tests mit Selenium und Cypress](#ui-tests-mit-selenium-und-cypress)
 8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
 9. [SonarQube-Analyse](#sonarqube-analyse)
-10. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
+10. [Continuous Integration mit Jenkins](#continuous-integration-mit-jenkins)
+11. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
 
 ## Projektübersicht
 
@@ -584,7 +585,107 @@ Als nächstes werdn die nachfolgenden Punkte angegangen:
 
 ---
 
-## 
+## Continuous Integration mit Jenkins - Oder: Wie ich lernte, die Build-Fehler zu lieben
+
+Die Integration von Jenkins erwies sich als schwieriger wie ursprünglich geplant... wobei es wohl noch an meinen Fähigkeiten lag.
+
+### Schritt 1: Jenkins-Projekt einrichten
+
+Zunächst wurde ein "Free Style"-Projekt in Jenkins erstellt.
+
+<img src="images/Bild16.png" alt="DevOpsLogo" width="157" height="80">
+
+**Wichtige Einstellungen:**
+- Projektname: "GPM-Build" 
+- Git Repository URL: https://github.com/blobb3/Galactic-Package-Manager
+- Branch: */main 
+
+### Schritt 2: Source Code Management konfigurieren
+
+Um Zugriff auf den Quellcode zu erhalten, wurde ein GitHub-Token eingerichtet.
+
+### Schritt 3: Build-Umgebung einrichten
+
+Damit Node.js und Gradle harmonisch zusammenarbeiten können, wurden folgende Einstellungen vorgenommen:
+
+<img src="images/Bild17.png" alt="DevOpsLogo" width="157" height="80">
+
+- "Provide Node & npm bin/ folder to PATH" aktiviert
+- NodeJS 21.11.0 ausgewählt 
+
+### Schritt 4: Backend-Build konfigurieren
+
+Nach zahlreichen "Permission denied" und "Directory not found" Fehlern (die Abwehr war stark), wurde folgende Shell-Kommando-Sequenz eingesetzt:
+
+```bash
+cd backend
+chmod +x ./gradlew
+./gradlew test build
+```
+
+Der erste Befehl wechselt ins richtige Verzeichnis, der zweite macht den Gradle-Wrapper ausführbar, und der dritte führt den eigentlichen Build durch.
+
+<img src="images/Bild18.png" alt="DevOpsLogo" width="157" height="80">
+
+### Schritt 5: Frontend-Build konfigurieren
+
+Für das Frontend wurde ein weiterer Shell-Befehl hinzugefügt:
+
+```bash
+npm install --prefix frontend
+```
+
+Der  `npm run lint:html`-Befehl wurde entfernt, nachdem bemerkt wurde, dass Copy-Pasten von Lösungen hier doch nicht sinvoll war (Lint wurde nämlich nie im Projekt eingesetzt).
+
+### Schritt 6: Docker-Integration
+
+Für die Containerisierung wurde die Docker-Integration eingerichtet:
+
+```bash
+export DOCKER_HOST=tcp://host.docker.internal:2375
+# docker build -t heinejan/devopsdemo .
+if [ -f "Dockerfile" ]; then
+  docker build -t heinejan/devopsdemo:backend .
+fi
+```
+
+Die auskommentierte Zeile ist eine Art Bauplan - bereit, aber noch nicht aktiviert.
+
+### Schritt 7: JaCoCo-Testabdeckung konfigurieren
+
+Zudem wurde JaCoCo für die Code-Coverage eingerichtet:
+
+<img src="images/Bild19.png" alt="DevOpsLogo" width="157" height="80">
+
+### Die JaCoCo-Testabdeckung
+
+Der JaCoCo-Bericht zeigt nun die Testabdeckung und welche Bereiche des Codes angeschaut werden sollten.
+
+<img src="images/Bild19.png" alt="DevOpsLogo" width="157" height="80">
+
+Wie man sehen kann, haben wir eine gute Testabdeckung für unsere Kernkomponenten erreicht. 
+
+### Die zahlreichen Build-Versuche
+
+Nach nur *[überraschtes Husten]* 42 Build-Versuchen funktionierte Jenkins endlich wie gewünscht. 
+
+Die häufigsten Hindernisse auf dem Weg:
+
+1. **Die verlorene Gradle-Datei**: Wie sich herausstellte, befand sich unsere `build.gradle` nicht dort, wo Jenkins sie vermutete. 
+
+2. **Der rebellische Gradle-Wrapper**: Mit `Permission denied` versuchte der Gradle-Wrapper, Jenkins den Zugang zu verweigern. Ein `chmod +x` löste den Widerstand.
+
+3. **Das Phantom-Skript**: Das `npm run lint:html`-Skript existierte nicht.
+
+4. **Der Docker-Connection-Konflikt**: "Ich bin dein Docker-Host" - sagte eine TCP-Verbindung, welche nicht existierte.
+
+> Allerdings ist der Build nun grün, die Pipeline steht, und das Repository einigermassen sicher.
+> Mit den richtigen Befehlen und etwas Geduld (viel Geduld... sehr viel Geduld) wird Jenkins zu einem treuen Verbündeten im Kampf für qualitativ hochwertigen Code.
+
+---
+
+
+
 
 Mit diesem Projekt wurde eine Full-Stack-Anwendung erstellt, welche als Basis für weitere DevOps-Übungen dienen kann. Es soll eine gute Lernumgebung geboten werden, um die verschiedenen Aspekte des DevOps-Zyklus zu verstehen und zu implementieren.
 
