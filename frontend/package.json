@@ -1,17 +1,38 @@
 {
   "name": "frontend",
   "version": "1.0.0",
+  "description": "Frontend für den Galactic Package Manager - Star Wars inspirierte Paketverwaltung",
   "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test",
+    "start": "serve -p 3000",
+    "selenium:chrome": "mocha test/chrome-test.js",
+    "selenium:firefox": "mocha test/firefox-test.js",
+    "open": "start http://localhost:3000",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
-  "keywords": [],
+  "keywords": [
+    "star-wars",
+    "package-manager",
+    "frontend",
+    "devops"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "animejs": "^4.0.2",
     "chart.js": "^4.4.9",
+    "frontend": "file:",
     "particles.js": "^2.0.0"
+  },
+  "devDependencies": {
+    "chromedriver": "^136.0.2",
+    "cypress": "^14.3.3",
+    "geckodriver": "^5.0.0",
+    "mocha": "^11.3.0",
+    "selenium-webdriver": "^4.32.0",
+    "serve": "^14.2.4"
   }
 }
