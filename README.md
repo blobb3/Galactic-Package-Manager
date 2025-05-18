@@ -12,7 +12,8 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 4. [Backend implementieren](#backend-implementieren)
 5. [Frontend entwickeln](#frontend-entwickeln)
 6. [Integration und Tests](#integration-und-tests)
-7. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
+7. [UI-Tests mit Selenium und Cypress](ui-tests-mit-selenium-und-cypress)
+8. [JaCoCo-Testabdeckungsbericht](#jacoco-testabdeckungsbericht)
 
 ## Projektübersicht
 
@@ -93,40 +94,11 @@ Nach Bestätigung dieser Einstellungen (und der Auswahl des Backend-Ordners) gen
 
 Vorest bleibt sie leer.
 
-### Schritt 4: .gitignore erstellen
+### Schritt 4: .gitignore erstellen und package.json erweitern
 
+Anonsten gibt es vzu veile commits, gitignore schränkt es ein , auch da frontend und backend in einem repository
+das packagejson 
 
-```
-# Java/Gradle
-.gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
-*.class
-bin/
-out/
-
-# Node.js
-node_modules/
-npm-debug.log*
-package-lock.json
-
-# IDE
-.idea/
-.vscode/
-*.iml
-.classpath
-.project
-.settings/
-
-# Logs
-logs/
-*.log
-
-# Temp files
-.DS_Store
-Thumbs.db
-```
 
 ---
 
@@ -296,6 +268,141 @@ Die Problematik konnte dann aber behoben werden:
 <img src="images/Bild9.png" alt="DevOpsLogo" width="157" height="80">
 
 Nach der Ausführung wird ein Testbericht generiert, welcher die Codeabdeckung und eventuelle Fehler anzeigt. Eine hohe Testabdeckung ist entscheidend für die Qualitätssicherung und erleichtert zukünftige Änderungen und Erweiterungen.
+
+## UI-Tests mit Selenium und Cypress
+
+UI-Tests sind ein wesentlicher Bestandteil des DevOps-Testprozesses und stellen sicher, dass die Benutzeroberfläche wie erwartet funktioniert. Für den Galactic Package Manager wurden drei verschiedene Test-Frameworks implementiert, um Cross-Browser-Kompatibilität zu gewährleisten und verschiedene Testansätze zu demonstrieren.
+
+### Schritt 1: Selenium Chrome Tests
+
+Selenium WebDriver ermöglicht die Automatisierung von Browser-Interaktionen, wodurch echte Benutzeraktionen simuliert werden können.
+
+```javascript
+// test/chrome-test.js (Kernkomponenten)
+const { Builder, By, until } = require('selenium-webdriver');
+const chrome = require('chromedriver');
+
+// Browser-Instanz erstellen
+driver = await new Builder().forBrowser('chrome').build();
+
+// Elemente finden und Interaktionen durchführen
+const searchButton = await driver.findElement(By.id('search-button'));
+await searchButton.click();
+
+// Screenshot für Debugging-Zwecke erstellen
+const image = await driver.takeScreenshot();
+fs.writeFileSync(screenshotPath, image, 'base64');
+```
+
+**Ausführung:**
+```bash
+npm run selenium:chrome
+```
+
+**Technischer Nutzen:** Selenium Chrome Tests simulieren reale Benutzerinteraktionen in Chrome, ermöglichen komplexe UI-Navigation und bieten detaillierte Fehleranalyse durch Screenshots. Sie sind besonders wertvoll für die Validierung kritischer Geschäftsprozesse.
+
+### Schritt 2: Selenium Firefox Tests
+
+Die gleichen Tests werden für Firefox implementiert, um die browserübergreifende Kompatibilität sicherzustellen.
+
+```javascript
+// test/firefox-test.js (Hauptunterschiede)
+const firefox = require('geckodriver');
+driver = await new Builder().forBrowser('firefox').build();
+```
+
+**Ausführung:**
+```bash
+npm run selenium:firefox
+```
+
+**Technischer Nutzen:** Die Firefox-Tests erweitern die Testabdeckung auf mehrere Browser und erhöhen die Sicherheit, dass die Anwendung unabhängig vom verwendeten Browser fehlerfrei funktioniert. Dies ist entscheidend für Webanwendungen, die eine breite Benutzerbasis ansprechen.
+
+### Schritt 3: Cypress End-to-End Tests
+
+Cypress ist ein moderneres Test-Framework, das speziell für Frontend-Tests entwickelt wurde und einige Vorteile gegenüber Selenium bietet.
+
+```javascript
+// cypress/e2e/galactic-pm.cy.js (Kernkomponenten)
+describe('Galactic Package Manager Tests', () => {
+  beforeEach(() => {
+    // Vor jedem Test die Anwendung öffnen
+    cy.visit('/');
+  });
+
+  it('sollte die Suchfunktion anzeigen', () => {
+    // Automatisches Warten auf Elemente
+    cy.get('#search-input').should('be.visible');
+    cy.get('#search-button').click();
+    // Screenshot erstellen
+    cy.screenshot('after-search-click');
+  });
+});
+```
+
+**Ausführung im interaktiven Modus:**
+```bash
+npx cypress open
+```
+
+**Ausführung im Headless-Modus:**
+```bash
+npx cypress run
+```
+
+**Technischer Nutzen:** Cypress bietet automatisches Warten auf UI-Elemente, bessere Debug-Möglichkeiten durch Time-Travel und detaillierte Testprotokolle. Es ist ideal für schnelle Entwicklungszyklen und bietet eine stabilere Testausführung mit weniger Flakiness als Selenium.
+
+### Schritt 4: Testinhalte
+
+Alle drei Testsuiten überprüfen die gleichen Kernfunktionalitäten:
+
+1. **UI-Basisprüfungen:**
+   - Korrekter Seitentitel
+   - Sichtbarkeit des Sternenhintergrunds
+   - Vorhandensein der Suchfunktion
+
+2. **Interaktive Elemente:**
+   - Klick auf die Such-Schaltfläche
+   - Paketauswahl und Navigation
+   - Start und Abbruch des Installations-Mini-Games
+
+3. **Navigationstests:**
+   - Von der Paketliste zu Paketdetails
+   - Zurück zur Paketliste nach Detailansicht
+### Schritt 5: CI/CD-Integration
+
+Die Tests wurden für die einfache Integration in CI/CD-Pipelines konzipiert:
+
+```yaml
+# Beispiel für Jenkins-Pipeline
+pipeline {
+    stages {
+        stage('UI Tests') {
+            parallel {
+                stage('Chrome Tests') {
+                    steps {
+                        sh 'npm run selenium:chrome'
+                    }
+                }
+                stage('Firefox Tests') {
+                    steps {
+                        sh 'npm run selenium:firefox'
+                    }
+                }
+                stage('Cypress Tests') {
+                    steps {
+                        sh 'npm run cypress:run'
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Diese parallele Ausführung maximiert die Effizienz der Testautomatisierung und beschleunigt Feedback-Zyklen im DevOps-Prozess.
+
+---
 
 ## JaCoCo-Testabdeckungsbericht
 
