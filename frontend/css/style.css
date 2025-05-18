@@ -303,4 +303,13 @@ footer p {
     .package-actions {
         flex-direction: column;
     }
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .logo-image {
+        height: 10px; 
+        margin-right: 15px;
+    }
 }
