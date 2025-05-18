@@ -17,6 +17,8 @@ Dieses Lernjournal dokumentiert die Entwicklung des Galactic Package Managers (G
 9. [SonarQube-Analyse](#sonarqube-analyse)
 10. [Die Macht der Container: Vom Dev- zum Ops-System](#die-macht-der-container-vom-dev-planeten-zum-ops-system)
 11. [Continuous Integration mit Jenkins](#continuous-integration-mit-jenkins)
+12. [Docker-Deployment und Render-Integration](#docker-deployment-und-render-integration)
+13. [Abschluss](#abschluss)
 
 ## Projektübersicht
 
@@ -684,8 +686,83 @@ Die häufigsten Hindernisse auf dem Weg:
 
 ---
 
+## Docker-Deployment und Render-Integration
 
+Nach der erfolgreichen Implementierung der JaCoCo-Testabdeckung folgte der komplexere Teil des DevOps-Workflows: Das Containerisieren der Anwendung mit Docker und das Deployment in die Cloud mittels Render.com.
 
+### Separate Images für Frontend und Backend
+
+Um die Architektur sauber zu trennen, wurden (nach 200 anderen Versuchen) zwei separate Docker-Images erstellt:
+
+1. **Backend-Image** (`heinejan/galactic-pm:latest`):
+   ```dockerfile
+   FROM openjdk:21-slim as build
+   WORKDIR /app
+   COPY backend .
+   RUN chmod +x ./gradlew
+   RUN ./gradlew bootJar
+   
+   FROM openjdk:21-slim
+   WORKDIR /app
+   COPY --from=build /app/build/libs/*.jar app.jar
+   EXPOSE 8080
+   ENTRYPOINT ["java", "-jar", "app.jar"]
+   ```
+
+2. **Frontend-Image** (`heinejan/galactic-pm-frontend:latest`):
+   ```dockerfile
+   FROM node:18-alpine
+   WORKDIR /app
+   COPY frontend/package*.json ./
+   RUN npm install
+   COPY frontend/ .
+   EXPOSE 3000
+   CMD ["npm", "start"]
+   ```
+
+### Docker Hub Integration
+
+Eine der grössten Herausforderungen war die korrekte Integration mit Docker Hub über Jenkins:
+
+1. **Registry-Authentifizierung**: Die Einrichtung der Docker Hub-Credentials in Jenkins erforderte mehrere Iterationen
+2. **Push-Prozess**: Das Pushen der Images zu Docker Hub innerhalb des Jenkins-Workflows erforderte spezifische Shell-Befehle und Umgebungsvariablen
+3. **Port-Konfiguration**: Die korrekte Weiterleitung der Ports (8080 für Backend, 3000 für Frontend) war entscheidend für das lokale Testing (es gab viele Fehlversuche)
+
+## Multi-Staged Deployment auf Render.com
+
+### Separate Web Services
+
+Um Frontend und Backend getrennt zu deployen, wurden zwei Web Services auf Render.com eingerichtet:
+
+1. **Backend-Service** (https://galactic-pm-backend.onrender.com/):
+   - Docker-Image: `heinejan/galactic-pm:latest`
+   - Port: 8080
+   - Umgebungsvariablen: Spring-spezifische Konfigurationen
+
+2. **Frontend-Service** (https://galactic-package-manager2.onrender.com/):
+   - Docker-Image: `heinejan/galactic-pm-frontend:latest`
+   - Port: 3000
+   - Angepasste API-URL, um mit dem Backend zu kommunizieren
+
+### Herausforderungen und Probleme
+
+Trotz erfolgreicher lokaler Tests und Docker-Integration traten bei der Deployment-Phase mehrere kritische Probleme auf:
+
+1. **CORS-Konfiguration**: Das Backend musste speziell konfiguriert werden, um Cross-Origin-Requests vom getrennten Frontend zu akzeptieren
+2. **API-Endpunkt-Anpassung**: Die harte Codierung der API-Endpunkte im Frontend erforderte Anpassungen und Neubau des Images
+3. **Render.com "Sleep Mode"**: Im kostenlosen Tier schlafen inaktive Services ein, was zu unvorhersehbarem Verhalten führte
+4. **Kommunikationsprobleme**: Trotz korrekter URL-Konfiguration konnte das Frontend nicht zuverlässig mit dem Backend kommunizieren
+
+Letztendlich wurde das Projekt erfolgreich containerisiert und in die Cloud deployt, aber die vollständige Funktionalität zwischen den getrennten Services konnte nicht hergestellt werden. Dies unterstreicht die Komplexität verteilter Systeme und die Notwendigkeit umfassender Integrationstests vor dem Deployment.
+
+> Frontend: https://galactic-package-manager2.onrender.com/
+> Backend: https://galactic-pm-backend.onrender.com/
+
+So oder so, die Erfahrungen waren nicht umsonst, da so ziemlich jeder Aspekt der Vorlesung nochmals durchgespielt wrude. Die Integration von Jenkins mit Docker und Cloud-Deployment-Plattformen bleibt zudem ein entscheidender Aspekt moderner DevOps-Workflows, erfordert jedoch sorgfältige Planung, etwas mehr Zeit und Konfiguration, um nahtlos zu funktionieren.
+
+---
+
+## Abschluss
 
 Mit diesem Projekt wurde eine Full-Stack-Anwendung erstellt, welche als Basis für weitere DevOps-Übungen dienen kann. Es soll eine gute Lernumgebung geboten werden, um die verschiedenen Aspekte des DevOps-Zyklus zu verstehen und zu implementieren.
 
