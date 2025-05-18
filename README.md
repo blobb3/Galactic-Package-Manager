@@ -383,6 +383,61 @@ Nun sollte die Anwendung funktionieren:
 4. **Kompatibilitätsfilter:** Das Dropdown-Menü sollte Pakete nach Fraktion filtern
 5. **Installation mit Mini-Spiel:** Das Klick-Spiel sollte funktionieren und zur Erfolgsseite führen
 
+---
+
+## SonarQube-Analyse für den Galactic Package Manager
+
+Um eine SonarQube-Analyse durchzuführen, folge diesen Schritten:
+
+### 1. SonarQube über Docker starten
+
+Wenn Docker Desktop bereits installiert ist, kann SonarQube mit folgendem Befehl gestartet werden:
+
+```powershell
+docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
+```
+
+SonarQube wird dann unter http://localhost:9000 verfügbar sein.
+
+### 2. SonarQube-Token erstellen
+
+1. Navigiere zu http://localhost:9000 im Browser
+2. Melde dich an mit dem Standardzugang (admin/admin)
+3. Ändere das Passwort, falls du dazu aufgefordert wirst
+4. Gehe zu Administration > Security > Users
+5. Klicke auf deinen Admin-Benutzer
+6. Wähle "Tokens" und klicke auf "Generate"
+7. Gib einen Namen ein ("galactic-pm-token") und wähle eine Ablaufzeit (möglichst bis nach dem Semester)
+8. Kopiere das generierte Token - es wird nur einmal angezeigt!
+
+### 3. Gradle-Konfiguration für SonarQube
+
+Die `build.gradle`-Datei im `backend/galactic-pm`-Verzeichnis muss noch um ein sonarqube-Plugin ergänzt werden.
+
+### 4. Analyse ausführen
+
+Navigiere zum `backend/galactic-pm`-Verzeichnis und führe den Befehl aus:
+
+```powershell
+# In PowerShell
+... Sonarqube dingens
+```
+
+Die Analyse wird ausgeführt und die Ergebnisse an deinen lokalen SonarQube-Server gesendet. Nach Abschluss kannst du die Ergebnisse im SonarQube-Dashboard unter http://localhost:9000 einsehen.
+
+### 5. Ergebnisse auswerten
+
+In SonarQube kannst du nun folgende Aspekte deines Codes analysieren:
+- Code-Qualität und -Struktur
+- Sicherheitslücken
+- Duplizierter Code
+- Testabdeckung (über die JaCoCo-Integration)
+- Code Smells und technische Schulden
+
+Das SonarQube-Dashboard bietet eine umfassende Übersicht und detaillierte Einblicke in potenzielle Verbesserungsmöglichkeiten für deinen Code.
+
+Falls du Probleme mit der Ausführung in PowerShell hast, versuche die CMD zu verwenden oder führe die Befehle über die Gradle-Integration in deiner IDE aus.
+
 
 ---
 
