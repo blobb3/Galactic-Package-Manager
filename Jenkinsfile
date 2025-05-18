@@ -32,17 +32,41 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan-DevOps', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
-                        set -x  # Debug-Modus aktivieren
+                        # Debug-Ausgaben aktivieren
+                        set -xe
+                        
                         export DOCKER_HOST=tcp://host.docker.internal:2375
                         
-                        echo "Anmelden bei Docker Hub..."
+                        # Docker-Version anzeigen
+                        docker --version
+                        
+                        # Vorhandene Images anzeigen
+                        echo "Vorhandene Images:"
+                        docker images
+                        
+                        # Explizit neu taggen (manchmal hilft das)
+                        echo "Tagge Image neu..."
+                        docker tag $(docker images -q heinejan/galactic-pm:latest) heinejan/galactic-pm:latest || echo "Tagging fehlgeschlagen, fahre fort..."
+                        
+                        # Bei Docker Hub anmelden
+                        echo "Melde bei Docker Hub an..."
                         echo $PASSWORD | docker login -u $USERNAME --password-stdin
                         
-                        echo "Lokale Images auflisten..."
-                        docker images | grep galactic-pm
+                        # Status nach Login prüfen
+                        if [ $? -ne 0 ]; then
+                            echo "Docker Login fehlgeschlagen!"
+                            exit 1
+                        fi
                         
+                        # Image pushen mit ausführlichen Informationen
                         echo "Pushe Image zu Docker Hub..."
                         docker push heinejan/galactic-pm:latest
+                        
+                        # Status nach Push prüfen
+                        if [ $? -ne 0 ]; then
+                            echo "Docker Push fehlgeschlagen!"
+                            exit 1
+                        fi
                         
                         echo "Docker Hub Push abgeschlossen."
                     '''
