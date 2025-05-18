@@ -33,6 +33,7 @@ public class GalacticPackageManagerIntegrationTest {
         return "http://localhost:" + port + "/api/packages";
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testGetAllPackages() {
         ResponseEntity<GalacticPackage[]> response = restTemplate.getForEntity(
@@ -42,6 +43,7 @@ public class GalacticPackageManagerIntegrationTest {
         assertTrue(response.getBody().length > 0);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testCRUDOperations() {
         // Create a new package
@@ -91,6 +93,7 @@ public class GalacticPackageManagerIntegrationTest {
         assertNull(verifyDeleteResponse.getBody());
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testSearchByName() {
         // First ensure we have a package with a unique name for testing
@@ -111,6 +114,7 @@ public class GalacticPackageManagerIntegrationTest {
         packageRepository.delete(uniquePackage);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testFilterByCompatibility() {
         // First ensure we have a package with Empire compatibility
