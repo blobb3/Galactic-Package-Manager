@@ -89,14 +89,16 @@ pipeline {
             }
         }
         
-        stage('Docker Push') {
+        stage('Trigger Render Deployment') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerHub-heinejan-DevOps', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh '''
-                        export DOCKER_HOST=tcp://host.docker.internal:2375
-                        echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                        docker push heinejan/galactic-pm:latest
-                    '''
+                script {
+                    withCredentials([string(credentialsId: 'RenderDeployKey2', variable: 'KEY')]) {
+                        sh '''
+                            echo "Starte Deployment auf Render.com..."
+                            curl -X GET "https://api.render.com/deploy/${KEY}"
+                            echo "Render.com Deployment wurde ausgelöst."
+                        '''
+                    }
                 }
             }
         }
